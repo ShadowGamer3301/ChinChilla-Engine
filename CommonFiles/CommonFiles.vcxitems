@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{4f0b1c01-a321-4042-a205-a63bbfd26cb2}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)CC_Application.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CC_Convert.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CC_Core.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CC_Entry.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CC_Exception.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CC_Graphics.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CC_GraphicsUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CC_Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)CC_Application.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CC_Convert.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CC_Exception.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CC_Graphics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CC_GraphicsUtils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CC_Window.cpp" />
+  </ItemGroup>
+</Project>

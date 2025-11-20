@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug DirectX" />
+    <BuildType Name="Release DirectX" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="Assets/Assets.vcxitems" Id="3d1acf40-f342-4343-844a-e58ea4e92b5a" />
+  <Project Path="CommonFiles/CommonFiles.vcxitems" Id="4f0b1c01-a321-4042-a205-a63bbfd26cb2" />
+  <Project Path="EngineCoreWin32/EngineCoreWin32.vcxproj" Id="f8810a08-dbc8-4c1c-a835-cee24849fea3" />
+  <Project Path="SandboxWin32/SandboxWin32.vcxproj" Id="3559f501-855e-4115-b79a-b78038489904" />
+</Solution>

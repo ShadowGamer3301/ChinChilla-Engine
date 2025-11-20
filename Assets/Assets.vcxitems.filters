@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Shaders HLSL">
+      <UniqueIdentifier>{70715ffe-3b2c-42db-8075-0c12f9c0a7f4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="$(MSBuildThisFileDirectory)V_Default.hlsl">
+      <Filter>Shaders HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="$(MSBuildThisFileDirectory)P_Default.hlsl">
+      <Filter>Shaders HLSL</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>
