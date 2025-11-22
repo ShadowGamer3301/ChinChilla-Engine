@@ -10,7 +10,8 @@ Game::~Game()
 
 void Game::Run()
 {
-	GetGraphics()->CompileShader("../Assets/V_Default.hlsl", "../Assets/P_Default.hlsl");
+	GetGraphics()->CompileShader("V_Default.hlsl", "P_Default.hlsl");
+	GetGraphics()->LoadModel("blista.fbx");
 
 	while (GetWindow()->UpdateWindow())
 	{

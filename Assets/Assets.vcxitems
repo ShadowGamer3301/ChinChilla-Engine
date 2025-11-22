@@ -14,7 +14,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)P_Default.hlsl" />
-    <FxCompile Include="$(MSBuildThisFileDirectory)V_Default.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Shader\P_Default.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Shader\V_Default.hlsl" />
   </ItemGroup>
 </Project>

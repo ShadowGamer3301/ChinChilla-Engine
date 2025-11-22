@@ -22,11 +22,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CC_Graphics.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CC_GraphicsUtils.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CC_Window.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CC_FileUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)CC_Application.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CC_Convert.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CC_Exception.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CC_FileUtils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CC_Graphics.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CC_GraphicsUtils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CC_Window.cpp" />

@@ -72,6 +72,7 @@ namespace Cc
 	private:
 		std::vector<GfxUtils::Shader> mv_Shaders;
 		std::vector<GfxUtils::Texture> mv_Textures;
+		std::vector<GfxUtils::Model> mv_Models;
 	};
 
 	namespace MultiThread

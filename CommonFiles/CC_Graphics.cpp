@@ -1,5 +1,6 @@
 #include "CC_Graphics.h"
 #include "CC_Convert.h"
+#include "CC_FileUtils.h"
 
 namespace Cc
 {
@@ -70,8 +71,11 @@ namespace Cc
 
 	uint32_t Graphics::CompileShader(const std::string& vertexPath, const std::string& pixelPath)
 	{
-		std::wstring wVertexPath = Cc::ConvertStringToWideString(vertexPath);
-		std::wstring wPixelPath = Cc::ConvertStringToWideString(pixelPath);
+		std::string pv = g_ShaderPath + StripPathToFileName(vertexPath);
+		std::string pp = g_ShaderPath + StripPathToFileName(pixelPath);
+
+		std::wstring wVertexPath = Cc::ConvertStringToWideString(pv);
+		std::wstring wPixelPath = Cc::ConvertStringToWideString(pp);
 
 		GfxUtils::Shader shader;
 
@@ -87,8 +91,8 @@ namespace Cc
 			return 0;
 		}
 
-		shader.m_PixelPath = pixelPath;
-		shader.m_VertexPath = vertexPath;
+		shader.m_PixelPath = pp;
+		shader.m_VertexPath = pv;
 		shader.m_ShaderId = GenerateUniqueShaderId();
 
 		mv_Shaders.push_back(shader);
@@ -98,14 +102,18 @@ namespace Cc
 
 	uint32_t Graphics::LoadTexture(const std::string& texturePath)
 	{
+		std::string path = g_TexturePath + StripPathToFileName(texturePath);
+
 		GfxUtils::Texture result;
 		std::vector<unsigned char> buffer;
 		unsigned int width, height;
 
-		int ret = lodepng::decode(buffer, width, height, texturePath);
+		LOG_F(INFO, "Loading %s", path.c_str());
+
+		int ret = lodepng::decode(buffer, width, height, path);
 		if (ret)
 		{
-			LOG_F(ERROR, "Failed to load %s, error code %u", texturePath.c_str(), ret);
+			LOG_F(ERROR, "Failed to load %s, error code %u", path.c_str(), ret);
 			return 0;
 		}
 
@@ -129,7 +137,7 @@ namespace Cc
 		HRESULT hr = mp_Device->CreateTexture2D(&texDesc, &data, result.mp_RawData.GetAddressOf());
 		if (FAILED(hr))
 		{
-			LOG_F(ERROR, "CreateTexture2D failed for %s, error code %u", texturePath.c_str(), hr);
+			LOG_F(ERROR, "CreateTexture2D failed for %s, error code %u", path.c_str(), hr);
 			return 0;
 		}
 
@@ -143,7 +151,7 @@ namespace Cc
 		hr = mp_Device->CreateShaderResourceView(result.mp_RawData.Get(), &srvDesc, result.mp_ShaderResource.GetAddressOf());
 		if (FAILED(hr))
 		{
-			LOG_F(ERROR, "CreateShaderResourceView failed for %s, error code %u", texturePath.c_str(), hr);
+			LOG_F(ERROR, "CreateShaderResourceView failed for %s, error code %u", path.c_str(), hr);
 			if (result.mp_RawData) result.mp_RawData.Reset();
 			return 0;
 		}
@@ -151,10 +159,10 @@ namespace Cc
 		LOG_F(INFO, "Shader resource view created");
 
 		result.m_TextureId = GenerateUniqueTextureId();
-		result.m_TexturePath = texturePath;
+		result.m_TexturePath = path;
 
 		mv_Textures.push_back(result);
-		LOG_F(INFO, "%s loaded", texturePath.c_str());
+		LOG_F(INFO, "%s loaded", path.c_str());
 
 		return result.GetTextureId();
 	}
@@ -163,16 +171,28 @@ namespace Cc
 	{
 		Assimp::Importer imp;
 
-		const aiScene* pScene = imp.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
+		GfxUtils::Model model;
+
+		std::string path = g_ModelPath + StripPathToFileName(modelPath);
+
+		LOG_F(INFO, "Loading %s", path.c_str());
+
+		const aiScene* pScene = imp.ReadFile(path, aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
 		if (!pScene)
 		{
-			LOG_F(ERROR, "Failed to load %s", modelPath.c_str());
+			LOG_F(ERROR, "Failed to load %s", path.c_str());
 			return 0;
 		}
 
+		ProcessNode(pScene->mRootNode, pScene, model.mv_Meshes);
 
+		model.m_ModelId = GenerateUniqueModelId();
+		model.m_ModelPath = path;
+		mv_Models.push_back(model);
 
-		return 0;
+		LOG_F(INFO, "%s loaded", path.c_str());
+
+		return model.GetModelId();
 	}
 
 	uint32_t Graphics::FindTextureByPath(const std::string& texturePath)
@@ -460,7 +480,7 @@ namespace Cc
 		if (p_Mesh->mMaterialIndex >= 0)
 		{
 			LOG_F(INFO, "Processing mesh materials... ");
-			
+			result.m_Material = ProcessMaterial(p_Scene->mMaterials[p_Mesh->mMaterialIndex]);
 		}
 
 		return result;
@@ -593,6 +613,31 @@ namespace Cc
 			for (auto& texture : mv_Textures)
 			{
 				if (texture.m_TextureId == id)
+					idFound = true;
+			}
+
+			if (idFound)
+				id++;
+
+		} while (idFound);
+
+		return id;
+	}
+
+	uint32_t Graphics::GenerateUniqueModelId()
+	{
+		if (mv_Textures.empty())
+			return 1;
+
+		uint32_t id = 1;
+		bool idFound = false;
+
+		do {
+			idFound = false;
+
+			for (auto& model : mv_Models)
+			{
+				if (model.m_ModelId == id)
 					idFound = true;
 			}
 
@@ -767,15 +812,17 @@ namespace Cc
 
 		void GraphicsMT::LoadTexture(ID3D11Device* p_Device, ID3D11Texture2D** pp_RawData, ID3D11ShaderResourceView** pp_Srv, std::string filePath)
 		{
-			LOG_F(INFO, "Loading %ls on thread %x", filePath.c_str(), (uint32_t)std::hash<std::thread::id>{}(std::this_thread::get_id()));
+			//LOG_F(INFO, "Loading %ls on thread %x", filePath.c_str(), (uint32_t)std::hash<std::thread::id>{}(std::this_thread::get_id()));
+
+			std::string path = g_TexturePath + StripPathToFileName(filePath);
 
 			std::vector<unsigned char> buffer;
 			unsigned int width, height;
 
-			int ret = lodepng::decode(buffer, width, height, filePath);
+			int ret = lodepng::decode(buffer, width, height, path);
 			if (ret)
 			{
-				LOG_F(ERROR, "Failed to decode %s, error code %u", filePath.c_str(), ret);
+				LOG_F(ERROR, "Failed to decode %s, error code %u", path.c_str(), ret);
 				return;
 			}
 
@@ -799,7 +846,7 @@ namespace Cc
 			HRESULT hr = p_Device->CreateTexture2D(&texDesc, &data, pp_RawData);
 			if (FAILED(hr))
 			{
-				LOG_F(ERROR, "CreateTexture2D failed for %s, error code %u", filePath.c_str(), hr);
+				LOG_F(ERROR, "CreateTexture2D failed for %s, error code %u", path.c_str(), hr);
 				return;
 			}
 
@@ -813,7 +860,7 @@ namespace Cc
 			hr = p_Device->CreateShaderResourceView(*pp_RawData, &srvDesc, pp_Srv);
 			if (FAILED(hr))
 			{
-				LOG_F(ERROR, "CreateShaderResourceView failed for %s, error code %u", filePath.c_str(), hr);
+				LOG_F(ERROR, "CreateShaderResourceView failed for %s, error code %u", path.c_str(), hr);
 				return;
 			}
 

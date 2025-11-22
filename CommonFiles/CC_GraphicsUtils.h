@@ -74,6 +74,7 @@ namespace Cc
 		private:
 			Microsoft::WRL::ComPtr<ID3D11Buffer> mp_VertexBuffer;
 			Microsoft::WRL::ComPtr<ID3D11Buffer> mp_IndexBuffer;
+			Material m_Material;
 		};
 
 		class Model

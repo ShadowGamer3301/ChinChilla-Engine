@@ -63,3 +63,8 @@
 
 //Include LodePNG
 #include <lodepng.h>
+
+//Asset paths
+static const constexpr const char* g_ModelPath = "../Assets/Model/";
+static const constexpr const char* g_ShaderPath = "../Assets/Shader/";
+static const constexpr const char* g_TexturePath = "../Assets/Texture/";

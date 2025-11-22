@@ -6,10 +6,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)V_Default.hlsl">
+    <FxCompile Include="$(MSBuildThisFileDirectory)Shader\V_Default.hlsl">
       <Filter>Shaders HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)P_Default.hlsl">
+    <FxCompile Include="$(MSBuildThisFileDirectory)Shader\P_Default.hlsl">
       <Filter>Shaders HLSL</Filter>
     </FxCompile>
   </ItemGroup>
